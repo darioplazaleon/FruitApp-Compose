@@ -8,7 +8,7 @@ class CartViewModel : ViewModel(){
     private val _fruits = MutableLiveData<List<Fruit>>()
 
 
-    val fruits: LiveData<List<Fruit>> = _fruits
+    val fruits: LiveData<List<Fruit>> get() = _fruits
 
     fun addFruit(fruit: Fruit, count: Int) {
         val existingFruit = fruits.value?.find { it.name == fruit.name }
@@ -30,11 +30,11 @@ class CartViewModel : ViewModel(){
     fun removeAndRefresh(fruit: Fruit) {
         val updatedList = fruits.value?.toMutableList() ?: mutableListOf()
         updatedList.remove(fruit)
-        _fruits.postValue(updatedList)
+        _fruits.value = updatedList
     }
 
     fun getFruits(): List<Fruit> {
-        return fruits.value ?: emptyList()
+        return _fruits.value ?: emptyList()
     }
 
     fun getTotalPrice(): Int {

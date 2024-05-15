@@ -1,5 +1,6 @@
 package com.example.composepractice.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -117,6 +119,13 @@ fun InfoFruitCard(fruit: Fruit, viewModel: CartViewModel) {
     var count by remember { mutableIntStateOf(1) }
     var isFavorite by remember { mutableStateOf(false) }
     var totalPrice by remember { mutableIntStateOf(fruit.price) }
+
+
+    val text = "Product added"
+    val duration = Toast.LENGTH_SHORT
+    val context = LocalContext.current
+
+    val toast = Toast.makeText(context, text, duration)
 
     Card(
         modifier = Modifier
@@ -220,7 +229,7 @@ fun InfoFruitCard(fruit: Fruit, viewModel: CartViewModel) {
                 .padding(top = 30.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { viewModel.addFruit(fruit, count)},
+                onClick = { viewModel.addFruit(fruit, count); toast.show() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(135, 206, 150)),
                 modifier = Modifier
                     .height(65.dp)

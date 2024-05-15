@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +58,8 @@ import com.example.composepractice.data.model.Fruit
 fun Cart(navController: NavController, viewModel: CartViewModel) {
 
     var (isEditVisible, setIsEditVisible) = remember { mutableStateOf(false) }
-    
+    var fruitList by remember { mutableStateOf(viewModel.fruits.value) }
+
 
     Column(
         modifier = Modifier
@@ -67,7 +69,11 @@ fun Cart(navController: NavController, viewModel: CartViewModel) {
     ) {
         TopBarCart(navController, isEditVisible, setIsEditVisible)
 
-        ProductsList(fruitList = viewModel.getFruits(), isEditVisible, viewModel)
+        fruitList?.let {
+            ProductsList(fruitList = it, isEditVisible, viewModel) { fruit ->
+                fruitList = fruitList?.filterNot { it == fruit }
+            }
+        }
 
         Row(
             modifier = Modifier
@@ -143,7 +149,7 @@ fun TopBarCart(
 }
 
 @Composable
-fun ProductsList(fruitList: List<Fruit>, isEditVisible: Boolean, viewModel: CartViewModel) {
+fun ProductsList(fruitList: List<Fruit>, isEditVisible: Boolean, viewModel: CartViewModel, onFruitRemoved: (Fruit) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxHeight(0.76f)
@@ -158,14 +164,14 @@ fun ProductsList(fruitList: List<Fruit>, isEditVisible: Boolean, viewModel: Cart
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             items(fruitList, key = { it.id }) { fruit ->
-                FruitCardCart(fruit = fruit, isEditVisible, viewModel = viewModel)
+                FruitCardCart(fruit = fruit, isEditVisible, viewModel = viewModel, onFruitRemoved)
             }
         }
     }
 }
 
 @Composable
-fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel) {
+fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel, onFruitRemoved: (Fruit) -> Unit) {
 
     var count by remember { mutableIntStateOf(fruit.quantity) }
     var totalPrice by remember { mutableIntStateOf(fruit.price * count) }
@@ -249,6 +255,7 @@ fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel
             onConfirmation = {
                 viewModel.removeAndRefresh(fruit);
                 openAlertDialog.value = false
+                onFruitRemoved(fruit)
             })
     }
 }
