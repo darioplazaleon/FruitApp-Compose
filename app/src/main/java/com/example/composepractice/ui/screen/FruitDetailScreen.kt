@@ -3,6 +3,7 @@ package com.example.composepractice.ui.screen
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,11 +38,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -52,6 +55,7 @@ import com.example.composepractice.data.model.Fruit
 
 @Composable
 fun FruitDetailScreen(navController: NavController, fruit: Fruit?, viewModel: CartViewModel) {
+
 
     if (fruit != null) {
         TopBarDetails(navController)
@@ -64,7 +68,8 @@ fun FruitDetailScreen(navController: NavController, fruit: Fruit?, viewModel: Ca
         ) {
             Image(
                 painter = painterResource(id = fruit.image),
-                contentDescription = "Fruit"
+                contentDescription = "Fruit",
+                modifier = Modifier.fillMaxHeight(0.5f)
             )
             InfoFruitCard(fruit = fruit, viewModel = viewModel)
         }
@@ -175,7 +180,9 @@ fun InfoFruitCard(fruit: Fruit, viewModel: CartViewModel) {
             text = fruit.description,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .align(Alignment.CenterHorizontally),
+                .height(80.dp)
+                .align(Alignment.CenterHorizontally)
+                .border(1.dp, Color(35, 120, 60)),
             color = Color(35, 120, 60)
         )
         Row(

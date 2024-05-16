@@ -114,7 +114,8 @@ fun WeekBestSellersCard(navController: NavController) {
             modifier = Modifier
                 .height(50.dp)
                 .width(55.dp),
-            contentPadding = PaddingValues(1.dp)
+            contentPadding = PaddingValues(1.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_forward_24),
