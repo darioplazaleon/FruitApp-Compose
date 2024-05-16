@@ -73,8 +73,8 @@ fun FruitScreen(navController: NavController, fruitList: List<Fruit>) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            FruitsForYou()
-            WeekBestSellersCard()
+            FruitsForYou(navController)
+            WeekBestSellersCard(navController)
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(30.dp),
                 modifier = Modifier.padding(16.dp)
@@ -91,7 +91,7 @@ fun FruitScreen(navController: NavController, fruitList: List<Fruit>) {
 
 
 @Composable
-fun WeekBestSellersCard() {
+fun WeekBestSellersCard(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth(0.90f)
@@ -108,7 +108,7 @@ fun WeekBestSellersCard() {
         )
         Spacer(modifier = Modifier.width(60.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate(Screen.WeekBestSellersScreen.route) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(135, 206, 150)),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
@@ -171,13 +171,14 @@ fun FruitCard(fruit: Fruit, onFruitClick: (fruit: Fruit) -> Unit) {
 }
 
 @Composable
-fun FruitsForYou() {
+fun FruitsForYou(navController: NavController) {
     ElevatedCard(
         colors = CardDefaults.cardColors(containerColor = Color(135, 206, 150)),
         shape = RoundedCornerShape(35.dp),
         modifier = Modifier
             .fillMaxWidth(0.90f)
             .height(140.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -208,20 +209,22 @@ fun FruitsForYou() {
                 color = Color.White,
                 modifier = Modifier.padding(start = 16.dp)
             )
-            Box(
+            Button(
+                onClick = { navController.navigate(Screen.WeekBestSellersScreen.route) },
                 modifier = Modifier
                     .height(40.dp)
                     .fillMaxSize()
                     .clip(RoundedCornerShape(topStart = 30.dp))
                     .background(color = Color(183, 227, 189))
-                    .align(Alignment.Bottom)
+                    .align(Alignment.Bottom),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_arrow_forward_24),
                     contentDescription = "Go to fruits for me",
                     tint = Color.White,
-                    modifier = Modifier
-                        .align(Alignment.Center)
+//                    modifier = Modifier
+//                        .align(Alignment.Center)
                 )
             }
         }

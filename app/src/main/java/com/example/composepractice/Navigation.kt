@@ -1,7 +1,6 @@
 package com.example.composepractice
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +13,7 @@ import com.example.composepractice.ui.screen.Cart
 import com.example.composepractice.ui.screen.FruitDetailScreen
 import com.example.composepractice.ui.screen.FruitScreen
 import com.example.composepractice.ui.screen.MasterScreen
+import com.example.composepractice.ui.screen.WeekBestSellersScreen
 
 sealed class Screen(val route: String) {
     object MasterScreen: Screen(route = "master_screen")
@@ -45,6 +45,10 @@ fun Navigation(viewModel: CartViewModel) {
                 val fruit = findFruit(id)
                 FruitDetailScreen(navController, fruit, viewModel)
             }
+        }
+
+        composable(Screen.WeekBestSellersScreen.route){
+            WeekBestSellersScreen(navController, fruitList)
         }
 
         composable(Screen.CartScreen.route){
