@@ -1,10 +1,8 @@
 package com.example.composepractice.ui.screen
 
-import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -37,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,6 +55,11 @@ fun Cart(navController: NavController, viewModel: CartViewModel) {
 
     var (isEditVisible, setIsEditVisible) = remember { mutableStateOf(false) }
     var fruitList by remember { mutableStateOf(viewModel.fruits.value) }
+    var totalPrice by remember { mutableIntStateOf(viewModel.getTotalPrice()) }
+
+    val updateTotalPrice: (Int) -> Unit = { newTotalPrice ->
+        totalPrice = newTotalPrice
+    }
 
 
     Column(
@@ -69,9 +70,10 @@ fun Cart(navController: NavController, viewModel: CartViewModel) {
     ) {
         TopBarCart(navController, isEditVisible, setIsEditVisible)
 
-        fruitList?.let {
-            ProductsList(fruitList = it, isEditVisible, viewModel) { fruit ->
+        fruitList?.let { it ->
+            ProductsList(fruitList = it, isEditVisible, viewModel, updateTotalPrice, totalPrice) { fruit ->
                 fruitList = fruitList?.filterNot { it == fruit }
+                updateTotalPrice(viewModel.getTotalPrice())
             }
         }
 
@@ -88,7 +90,7 @@ fun Cart(navController: NavController, viewModel: CartViewModel) {
                 color = Color(35, 120, 60)
             )
             Text(
-                text = "$${viewModel.getTotalPrice()}",
+                text = "$${totalPrice}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = Color(35, 120, 60)
@@ -106,6 +108,7 @@ fun Cart(navController: NavController, viewModel: CartViewModel) {
         }
     }
 }
+
 
 @Composable
 fun TopBarCart(
@@ -149,7 +152,14 @@ fun TopBarCart(
 }
 
 @Composable
-fun ProductsList(fruitList: List<Fruit>, isEditVisible: Boolean, viewModel: CartViewModel, onFruitRemoved: (Fruit) -> Unit) {
+fun ProductsList(
+    fruitList: List<Fruit>,
+    isEditVisible: Boolean,
+    viewModel: CartViewModel,
+    updateTotalPrice: (Int) -> Unit,
+    totalPrice: Int,
+    onFruitRemoved: (Fruit) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxHeight(0.76f)
@@ -164,17 +174,31 @@ fun ProductsList(fruitList: List<Fruit>, isEditVisible: Boolean, viewModel: Cart
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             items(fruitList, key = { it.id }) { fruit ->
-                FruitCardCart(fruit = fruit, isEditVisible, viewModel = viewModel, onFruitRemoved)
+                FruitCardCart(
+                    fruit = fruit,
+                    isEditVisible,
+                    viewModel = viewModel,
+                    onFruitRemoved,
+                    updateTotalPrice,
+                    totalPrice,
+                )
             }
         }
     }
 }
 
 @Composable
-fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel, onFruitRemoved: (Fruit) -> Unit) {
+fun FruitCardCart(
+    fruit: Fruit,
+    isEditVisible: Boolean,
+    viewModel: CartViewModel,
+    onFruitRemoved: (Fruit) -> Unit,
+    updateTotalPrice: (Int) -> Unit,
+    totalPrice: Int
+) {
 
     var count by remember { mutableIntStateOf(fruit.quantity) }
-    var totalPrice by remember { mutableIntStateOf(fruit.price * count) }
+    var totalPriceFruit by remember { mutableIntStateOf(fruit.price * count) }
 
     val openAlertDialog = remember { mutableStateOf(false) }
 
@@ -206,9 +230,11 @@ fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel
                     EditProduct(
                         fruit = fruit,
                         count = count,
-                        totalPrice = totalPrice,
+                        totalPriceFruit = totalPriceFruit,
                         onCountChange = { newCount -> count = newCount },
-                        onTotalPriceChange = { newTotalPrice -> totalPrice = newTotalPrice },
+                        onTotalPriceChange = { newTotalPrice -> totalPriceFruit = newTotalPrice },
+                        updateTotalPrice = updateTotalPrice,
+                        totalPrice = totalPrice,
                         viewModel = viewModel
                     )
                 } else {
@@ -237,7 +263,7 @@ fun FruitCardCart(fruit: Fruit, isEditVisible: Boolean, viewModel: CartViewModel
                         )
                     }
                     Text(
-                        text = "$$totalPrice",
+                        text = "$$totalPriceFruit",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         modifier = Modifier.padding(top = 18.dp),
@@ -265,8 +291,10 @@ fun EditProduct(
     fruit: Fruit,
     count: Int,
     onCountChange: (Int) -> Unit,
-    totalPrice: Int,
+    totalPriceFruit: Int,
     onTotalPriceChange: (Int) -> Unit,
+    updateTotalPrice: (Int) -> Unit,
+    totalPrice: Int,
     viewModel: CartViewModel
 ) {
     Row(modifier = Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -274,7 +302,9 @@ fun EditProduct(
             onClick = {
                 if (count > 1) {
                     onCountChange(count - 1)
-                    onTotalPriceChange(totalPrice - fruit.price)
+                    onTotalPriceChange(totalPriceFruit - fruit.price)
+                    updateTotalPrice(totalPrice - fruit.price)
+                    viewModel.updateTotalPrice2(fruit.price)
                 }
             },
             enabled = count > 1,
@@ -293,7 +323,9 @@ fun EditProduct(
         OutlinedButton(
             onClick = {
                 onCountChange(count + 1)
-                onTotalPriceChange(totalPrice + fruit.price)
+                onTotalPriceChange(totalPriceFruit + fruit.price)
+                updateTotalPrice(totalPrice + fruit.price)
+                viewModel.updateTotalPrice(fruit.price)
             },
             contentPadding = PaddingValues(1.dp),
             shape = RoundedCornerShape(16.dp),

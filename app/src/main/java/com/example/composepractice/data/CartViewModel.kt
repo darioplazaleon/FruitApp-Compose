@@ -40,4 +40,16 @@ class CartViewModel : ViewModel(){
     fun getTotalPrice(): Int {
         return fruits.value?.sumOf { it.price * it.quantity } ?: 0
     }
+
+    fun updateTotalPrice(totalPrice: Int): Int {
+        val totalPriceCart = getTotalPrice()
+        val updatedTotalPrice = totalPriceCart + totalPrice
+        return updatedTotalPrice
+    }
+
+    fun updateTotalPrice2(totalPrice: Int): Int {
+        val totalPriceCart = getTotalPrice()
+        val updatedTotalPrice = totalPriceCart - totalPrice
+        return updatedTotalPrice
+    }
 }
