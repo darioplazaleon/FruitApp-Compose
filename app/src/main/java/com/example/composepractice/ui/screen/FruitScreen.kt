@@ -1,5 +1,6 @@
 package com.example.composepractice.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,14 +20,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.twotone.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,26 +49,41 @@ import com.example.composepractice.Screen
 import com.example.composepractice.data.model.Fruit
 
 
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FruitScreen(navController: NavController, fruitList: List<Fruit>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(251, 253, 251)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        FruitsForYou()
-        WeekBestSellersCard()
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(30.dp),
-            modifier = Modifier.padding(16.dp)
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Hello, Dario!", fontWeight = FontWeight.Bold, fontSize = 30.sp) },
+            actions = {
+                Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "User Account")
+            },
+            colors = topAppBarColors(
+                containerColor = Color.Transparent,
+                titleContentColor = Color(35, 120, 60),
+                actionIconContentColor = Color.Black
+            ),
+            modifier = Modifier.padding(top = 16.dp, start = 20.dp, end = 20.dp)
+        )
+    }) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(251, 253, 251)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            items(fruitList.take(3), key = { it.id }) { fruit ->
-                FruitCard(
-                    fruit,
-                    onFruitClick = { navController.navigate(Screen.FruitDetailScreen.route + "/${fruit.id}") })
+            FruitsForYou()
+            WeekBestSellersCard()
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(30.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                items(fruitList.take(3), key = { it.id }) { fruit ->
+                    FruitCard(
+                        fruit,
+                        onFruitClick = { navController.navigate(Screen.FruitDetailScreen.route + "/${fruit.id}") })
+                }
             }
         }
     }

@@ -107,7 +107,6 @@ fun TopBarDetails(navController: NavController) {
         ) {
             Icon(
                 imageVector = Icons.Outlined.ShoppingCart,
-//                painter = painterResource(id = R.drawable.baseline_add_shopping_cart_24),
                 contentDescription = "Go to Cart", tint = Color.White
             )
         }
